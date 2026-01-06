@@ -3,66 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>539 智能操盤系統 (Pro Lite)</title>
+    <title>539 智能操盤系統 (Winner Removal Ver.)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         /* --- 極簡樣式區 (Lite) --- */
-        body { background-color: #1a1a1a; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; font-size: 14px; }
-        h1, h2 { margin: 0 0 10px 0; font-weight: normal; color: #fff; border-bottom: 1px solid #444; padding-bottom: 5px; }
-        h1 { font-size: 20px; text-align: center; margin-bottom: 15px; letter-spacing: 1px; }
-        h2 { font-size: 16px; margin-top: 0; color: #81d4fa; }
+        body { background-color: #121212; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; font-size: 14px; }
+        h1, h2 { margin: 0 0 10px 0; font-weight: normal; color: #fff; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        h1 { font-size: 20px; text-align: center; margin-bottom: 15px; letter-spacing: 1px; color: #90caf9; }
+        h2 { font-size: 16px; margin-top: 0; color: #81d4fa; display: flex; justify-content: space-between; align-items: center;}
 
         .container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
-        .box { background: #2d2d2d; border: 1px solid #444; padding: 15px; border-radius: 4px; }
+        .box { background: #1e1e1e; border: 1px solid #333; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         
-        button { cursor: pointer; padding: 6px 12px; border: 1px solid #555; background: #3d3d3d; color: #fff; font-size: 13px; border-radius: 4px; transition: 0.2s; }
-        button:hover { background: #505050; }
+        button { cursor: pointer; padding: 6px 12px; border: 1px solid #444; background: #2c2c2c; color: #fff; font-size: 13px; border-radius: 4px; transition: 0.2s; }
+        button:hover { background: #404040; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-        button.active { background: #0277bd; border-color: #0277bd; font-weight: bold; box-shadow: 0 0 8px rgba(2,119,189,0.5); }
+        button.active { background: #1565c0; border-color: #0d47a1; font-weight: bold; box-shadow: 0 0 8px rgba(21, 101, 192, 0.5); }
         
-        .btn-reset { background: #c62828; border-color: #b71c1c; }
+        .btn-reset { background: #b71c1c; border-color: #7f0000; }
         .btn-fetch { width: 100%; padding: 12px; background: #2e7d32; border-color: #1b5e20; font-weight: bold; margin-top: 10px; font-size: 14px; }
-        .btn-switch { background: #1565c0; }
+        .btn-switch { background: #0277bd; }
 
-        .status-bar { display: flex; justify-content: space-between; align-items: center; background: #222; padding: 8px; border-radius: 4px; }
-        .status-text { font-weight: bold; }
-        .loading { color: #ffd600; } .success { color: #00e676; } .syncing { color: #29b6f6; }
+        .status-bar { display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 8px; border-radius: 4px; border: 1px solid #333; }
+        .status-text { font-weight: bold; font-size: 12px; }
+        .loading { color: #ffd600; } .success { color: #69f0ae; } .syncing { color: #40c4ff; }
         
         .progress-container { height: 3px; background: #333; width: 100%; margin-top: 5px; overflow: hidden; border-radius: 2px; }
-        .progress-fill { height: 100%; background: #29b6f6; width: 0%; transition: width 0.3s; }
+        .progress-fill { height: 100%; background: #40c4ff; width: 0%; transition: width 0.3s; }
         
         .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
         @media(min-width: 768px) { .dashboard-grid { grid-template-columns: 2fr 1fr; } }
 
-        .control-panel { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; background: #222; padding: 8px; border-radius: 4px; }
-        input, select { background: #111; border: 1px solid #555; color: #fff; padding: 5px; border-radius: 3px; }
+        .control-panel { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; background: #252525; padding: 8px; border-radius: 4px; border: 1px solid #333; }
+        input, select { background: #121212; border: 1px solid #444; color: #fff; padding: 5px; border-radius: 3px; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
-        .stat-item { background: #222; padding: 8px; border: 1px solid #333; border-radius: 4px; }
+        .stat-item { background: #252525; padding: 8px; border: 1px solid #333; border-radius: 4px; }
         .stat-label { font-size: 11px; color: #aaa; display: block; margin-bottom: 4px; }
         .stat-val { font-size: 15px; font-weight: bold; }
-        .val-win { color: #00e676; } .val-loss { color: #ff5252; }
+        .val-win { color: #69f0ae; } .val-loss { color: #ff5252; }
 
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; white-space: nowrap; }
-        th, td { border: 1px solid #444; padding: 8px; text-align: center; }
-        th { background: #222; color: #90caf9; }
-        tr:nth-child(even) { background: #333; }
+        th, td { border: 1px solid #333; padding: 8px; text-align: center; }
+        th { background: #252525; color: #90caf9; }
+        tr:nth-child(even) { background: #1a1a1a; }
         
-        .num-ball { display: inline-block; width: 22px; height: 22px; line-height: 22px; border-radius: 50%; background: #444; margin: 0 1px; font-size: 11px; }
+        .num-ball { display: inline-block; width: 22px; height: 22px; line-height: 22px; border-radius: 50%; background: #333; margin: 0 1px; font-size: 11px; color: #bbb;}
         .num-hit { background: #ffd600; color: #000; font-weight: bold; box-shadow: 0 0 5px rgba(255, 214, 0, 0.6); }
+        .num-excluded { text-decoration: line-through; color: #ff5252; font-size: 10px; margin-right: 2px;}
 
         .pred-balls { display: flex; justify-content: center; gap: 8px; margin: 15px 0; flex-wrap: wrap; }
         .pred-ball { background: linear-gradient(135deg, #ff6f00, #ff8f00); color: white; width: 36px; height: 36px; line-height: 36px; text-align: center; border-radius: 50%; font-weight: bold; font-size: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-        .mode-b .pred-ball { background: linear-gradient(135deg, #7b1fa2, #9c27b0); } /* Purple balls for Mode 2 */
+        .mode-b .pred-ball { background: linear-gradient(135deg, #6a1b9a, #8e24aa); }
 
         .loading-overlay { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; flex-direction: column; z-index: 10; backdrop-filter: blur(2px); }
         
         /* Modal */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 999; }
-        .modal-box { background: #333; padding: 20px; border: 1px solid #666; width: 300px; text-align: center; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .modal-box { background: #222; padding: 20px; border: 1px solid #444; width: 300px; text-align: center; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .modal-actions { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+
+        .tag-removed { font-size: 10px; padding: 2px 4px; background: #333; border: 1px solid #ff5252; color: #ff5252; border-radius: 3px; margin-left: 5px; }
     </style>
 </head>
 <body class="mode-a">
@@ -77,10 +80,10 @@
 
 <div class="container">
     <header>
-        <h1 id="app-title">Lotto 539 智能操盤系統 (Pro Lite)</h1>
+        <h1 id="app-title">Lotto 539 智能操盤系統 (Winner Removal)</h1>
         <div style="text-align:center; margin-bottom:5px;">
             <button class="active" id="btnModeA" onclick="setMode('A')">玩法 1: 策略 B+ (5選)</button>
-            <button id="btnModeB" onclick="setMode('B')">玩法 2: Python 集成策略 (8選)</button>
+            <button id="btnModeB" onclick="setMode('B')">玩法 2: 贏家不續抱 (8選)</button>
         </div>
     </header>
 
@@ -97,7 +100,7 @@
         </div>
     </div>
 
-    <div id="manualInputSection" class="box" style="display:none; border-color:#b71c1c; background:rgba(183, 28, 28, 0.2);">
+    <div id="manualInputSection" class="box" style="display:none; border-color:#b71c1c; background:rgba(183, 28, 28, 0.1);">
         <p style="margin:0 0 10px 0; font-weight:bold; color:#ff8a80; text-align:center;">⚠️ 自動更新失敗，請手動輸入最新獎號</p>
         <div style="display:flex; gap:8px; justify-content:center;">
             <input type="number" id="m1" style="width:40px; text-align:center;"><input type="number" id="m2" style="width:40px; text-align:center;">
@@ -111,8 +114,8 @@
         <div class="box" style="position:relative;">
             <div class="loading-overlay" id="loadingBar">
                 <span style="font-size:16px; font-weight:bold; color:white;">AI 運算中...</span>
-                <div style="width:150px; height:4px; background:#555; margin-top:10px; border-radius:2px;"><div id="progressFill" style="height:100%; width:0%; background:#29b6f6;"></div></div>
-                <div style="font-size:12px; color:#aaa; margin-top:5px;">分析因子與回測歷史</div>
+                <div style="width:150px; height:4px; background:#555; margin-top:10px; border-radius:2px;"><div id="progressFill" style="height:100%; width:0%; background:#40c4ff;"></div></div>
+                <div style="font-size:12px; color:#aaa; margin-top:5px;">正在執行狀態回測...</div>
             </div>
 
             <h2 id="strategyTitle">策略回測報告</h2>
@@ -136,7 +139,7 @@
                 <div class="stat-item"><span class="stat-label">MDD (回撤)</span><span class="stat-val val-loss" id="st-mdd">--</span></div>
                 <div class="stat-item"><span class="stat-label">資料區間</span><span class="stat-val" id="real-test-count-disp" style="font-size:12px;">--</span></div>
             </div>
-            <div id="strategy-desc" style="font-size:12px; color:#888; margin-top:10px; padding:10px; background:rgba(0,0,0,0.2); border-radius:4px; line-height:1.4;">
+            <div id="strategy-desc" style="font-size:12px; color:#888; margin-top:10px; padding:10px; background:rgba(255,255,255,0.05); border-radius:4px; line-height:1.4;">
                 載入中...
             </div>
         </div>
@@ -146,7 +149,7 @@
             <div style="text-align:center; padding:15px 0; border-bottom:1px dashed #444; flex-grow:1;">
                 <div style="font-size:13px; color:#aaa;">預測開獎日</div>
                 <div id="nextDrawDate" style="font-size:20px; font-weight:bold; color:#fff; margin:5px 0;">--/--</div>
-                <div id="nextWeekday" style="color:#29b6f6; font-size:14px;">週--</div>
+                <div id="nextWeekday" style="color:#40c4ff; font-size:14px;">週--</div>
                 
                 <div id="prediction-panel" style="margin-top:20px;">
                     <div id="prediction-content" style="color:#777;">等待運算...</div>
@@ -183,14 +186,14 @@
 
 <script>
     // ==========================================
-    //  全域配置與常量
+    //  全域配置
     // ==========================================
     const DRIVE_FILE_ID = '1K2CNRIE97NRfJrzKiG8Adcz_tFeYHPlm';
-    const STORAGE_KEY = 'lotto539_data_lite_v3'; // update key
+    const STORAGE_KEY = 'lotto539_data_winner_removal_v1';
     const BASE_URL = "https://www.lotto-8.com/listlto539.asp";
     const CRAWL_PAGES = 3;
     
-    // --- 模式 A: 策略 B+ (5選) ---
+    // 模式 A: 原始 B+ (5選)
     const MODE_A_SETTINGS = {
         label: "策略 B+ (結構化優選)",
         numsToPick: 5,
@@ -199,25 +202,26 @@
         desc: "權重: 短/中週期 + 遺漏值 | 濾網: 奇偶/尾數/區間平衡"
     };
 
-    // --- 模式 B: Python 集成策略 (8選) ---
+    // 模式 B: 贏家不續抱 (8選)
     const MODE_B_SETTINGS = {
-        label: "集成策略 (Ensemble)",
+        label: "贏家不續抱 (Winner Removal)",
         numsToPick: 8,
         cost: 3030,
-        // 依據 Python 代碼設定: 1中3420, 2中3420, 3中7410, 4中97800, 5中432000
+        // 1中3420, 2中3420, 3中7410, 4中97800, 5中432000
         payouts: { 1: 3420, 2: 3420, 3: 7410, 4: 97800, 5: 432000 },
-        desc: "Python移植版: 40%動量(近20期) + 30%關聯(近50期) + 15%遺漏回補 + 15%區間"
+        desc: "集成策略(動量/關聯/遺漏/區間) + 動態濾網：若上期獲利(>0)，當期強制剔除上期中獎號碼 (贏家休息)。"
     };
     
     let fullData = [];
     let globalTradeHistory = []; 
-    let currentMode = 'A'; // 'A' or 'B'
+    let currentMode = 'A'; 
     let currentPage = 1;
     const ITEMS_PER_PAGE = 10;
     let equityChartInstance = null;
+    let lastRoundExcluded = []; // 供預測使用 (紀錄最新一期是否觸發剔除)
 
     // ==========================================
-    //  系統初始化與 UI
+    //  初始化
     // ==========================================
     window.onload = initSystem;
 
@@ -226,9 +230,8 @@
         el.innerText = text;
         el.className = 'status-text ' + type;
         const bar = document.getElementById('statusProgressBar');
-        if(type === 'loading' || type === 'syncing') {
-            bar.style.width = '60%';
-        } else if (type === 'success') {
+        if(type === 'loading' || type === 'syncing') bar.style.width = '60%';
+        else if (type === 'success') {
             bar.style.width = '100%';
             setTimeout(() => { bar.style.width = '0%'; }, 800);
         }
@@ -248,7 +251,7 @@
                 btnCancel.onclick = () => { modal.style.display='none'; resolve(false); };
                 const btnConfirm = document.createElement('button');
                 btnConfirm.innerText = '確定';
-                btnConfirm.style.background = '#c62828';
+                btnConfirm.style.background = '#b71c1c';
                 btnConfirm.onclick = () => { modal.style.display='none'; resolve(true); };
                 actionsEl.appendChild(btnCancel); actionsEl.appendChild(btnConfirm);
             } else {
@@ -262,19 +265,18 @@
     }
 
     // ==========================================
-    //  資料層 (Data Layer)
+    //  Data Layer
     // ==========================================
     async function fetchCloudData() {
-        setStatus("正在同步雲端資料庫...", 'syncing');
+        setStatus("同步雲端資料庫...", 'syncing');
         const driveUrl = `https://drive.google.com/uc?export=download&id=${DRIVE_FILE_ID}`;
         const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(driveUrl)}`;
         try {
             let res = await fetch(proxyUrl);
-            if (!res.ok) throw new Error("Network response was not ok");
-            let data = await res.json();
-            return data;
+            if (!res.ok) throw new Error("Network error");
+            return await res.json();
         } catch (error) {
-            console.warn("Cloud fetch failed, using local fallback", error);
+            console.warn("Cloud fetch failed", error);
             return []; 
         }
     }
@@ -285,16 +287,14 @@
         const localStr = localStorage.getItem(STORAGE_KEY);
         if (localStr) { try { localData = JSON.parse(localStr); } catch(e) {} }
 
-        // 合併數據 (去重)
         let mergedMap = new Map();
         if (Array.isArray(cloudData)) cloudData.forEach(item => mergedMap.set(item.date, item));
         if (Array.isArray(localData)) localData.forEach(item => mergedMap.set(item.date, item));
 
         fullData = Array.from(mergedMap.values());
-        fullData.sort((a,b) => new Date(b.date) - new Date(a.date)); // 最新在[0]
+        fullData.sort((a,b) => new Date(b.date) - new Date(a.date)); // [0] is Newest
         localStorage.setItem(STORAGE_KEY, JSON.stringify(fullData));
         
-        // 第一次執行回測與抓取
         runAnalysisWithLoading();
         forceFetchData(); 
     }
@@ -308,7 +308,7 @@
     }
 
     async function forceFetchData() {
-        setStatus("檢查最新開獎...", 'syncing');
+        setStatus("檢查開獎更新...", 'syncing');
         const proxies = [
             url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}&timestamp=${Date.now()}`,
             url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
@@ -341,7 +341,7 @@
                 setStatus(`更新成功: +${newData.length} 期`, 'success');
                 runAnalysisWithLoading();
             } else {
-                setStatus("目前已是最新資料", 'success');
+                setStatus("已是最新資料", 'success');
             }
         } catch(e) { 
             setStatus("連線失敗", 'loading');
@@ -377,11 +377,9 @@
 
     function manualStart() {
         let inputs = [1,2,3,4,5].map(i => parseInt(document.getElementById('m'+i).value));
-        if(inputs.some(isNaN) || inputs.some(n=>n<1||n>39)) { showModal('error','錯誤','請輸入正確的 1-39 號碼'); return; }
-        
+        if(inputs.some(isNaN) || inputs.some(n=>n<1||n>39)) { showModal('error','錯誤','請輸入正確號碼'); return; }
         let today = new Date();
         let dateStr = `${today.getFullYear()}/${(today.getMonth()+1).toString().padStart(2,'0')}/${today.getDate().toString().padStart(2,'0')}`;
-        
         fullData.unshift({ date: dateStr, numbers: inputs });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(fullData));
         document.getElementById('manualInputSection').style.display = 'none';
@@ -389,14 +387,13 @@
     }
 
     // ==========================================
-    //  策略邏輯層 (The Brain)
+    //  Core Logic: 策略運算
     // ==========================================
 
-    // 通用：組合生成 C(n, k)
     function getCombinations(arr, k) {
         let i, subI, ret = [], sub, next;
         for (i = 0; i < arr.length; i++) {
-            if (k === 1) { ret.push([arr[i]]); } 
+            if (k === 1) ret.push([arr[i]]);
             else {
                 sub = getCombinations(arr.slice(i + 1), k - 1);
                 for (subI = 0; subI < sub.length; subI++) {
@@ -407,7 +404,7 @@
         return ret;
     }
 
-    // --- 策略 A: 原始 B+ 邏輯 ---
+    // 策略 A: 原始 B+
     function getStrategyAPrediction(historyVals) {
         const params = { w_short: 1.0, w_mid: 3.0, w_repeater: 0.0, w_recent: 1.0, w_cold: 3.0 };
         let scores = {};
@@ -451,164 +448,101 @@
         return (bestCombo || sortedNums.slice(0,5)).sort((a,b)=>a-b);
     }
 
-    // --- 策略 B: Python 集成策略 (Ensemble) 8選 ---
-    // 完全移植自您的 Python 代碼
-    function getStrategyBPrediction(historyVals) {
-        // historyVals 是 [最新, 次新, ..., 最舊]
-        // 但 Python 邏輯通常使用 [最舊, ..., 最新] 做 slice. 
-        // 為了對應 Python 代碼，我們先把數據轉為 [最舊, ..., 最新] 的格式方便思考，或者調整 index 邏輯
-        // 這裡我們直接用 slice(0, N) 來取最新的 N 期 (因 historyVals[0] 是最新)
+    // 策略 B: 集成策略 (回傳完整排名 1-39)
+    function getEnsembleRankedList(historyVals) {
+        // historyVals: [Newest ... Oldest]
+        // 為了符合 Python 習慣，我們用 slice 取 N 期 (index 0 is newest)
 
-        // Helper: Normalize (0-1)
         function normalize(scoreObj) {
             let vals = Object.values(scoreObj);
             if(vals.length === 0) return {};
-            let min = Math.min(...vals);
-            let max = Math.max(...vals);
+            let min = Math.min(...vals), max = Math.max(...vals);
             let res = {};
-            for(let k in scoreObj) {
-                res[k] = (max === min) ? 0.5 : (scoreObj[k] - min) / (max - min);
-            }
+            for(let k in scoreObj) res[k] = (max === min) ? 0.5 : (scoreObj[k] - min) / (max - min);
             return res;
         }
 
-        // 1. 🔥 動量因子 (Momentum) - 40%
-        // Python: subset = history_df.tail(20) -> JS: historyVals.slice(0, 20)
+        // 1. Momentum (近20期)
         let recent20 = historyVals.slice(0, 20).flat();
         let scores_mom = {};
         for(let n=1; n<=39; n++) scores_mom[n] = 0;
-        recent20.forEach(n => scores_mom[n] = (scores_mom[n]||0) + 1);
+        recent20.forEach(n => scores_mom[n]++);
 
-        // 2. 🔗 關聯因子 (Association) - 30%
-        // Python: subset = history_df.tail(50)
+        // 2. Association (近50期)
         let subset50 = historyVals.slice(0, 50);
         let all_nums_50 = subset50.flat();
-        
-        // 找前3種子
-        let counts50 = {};
-        all_nums_50.forEach(n => counts50[n] = (counts50[n]||0) + 1);
+        let counts50 = {}; all_nums_50.forEach(n => counts50[n] = (counts50[n]||0)+1);
         let top_seeds = Object.keys(counts50).map(Number).sort((a,b)=>counts50[b]-counts50[a]).slice(0,3);
 
         let scores_assoc = {};
-        for(let n=1; n<=39; n++) scores_assoc[n] = 0;
-
-        // 計算共現
-        // subset50 是 [最新...舊]。迭代順序不影響計數。
+        for(let n=1; n<=39; n++) scores_assoc[n] = top_seeds.includes(n) ? 1000 : 0;
         subset50.forEach(nums => {
-            // 如果該期包含任何種子
             if(nums.some(n => top_seeds.includes(n))) {
-                nums.forEach(n => {
-                    if(!top_seeds.includes(n)) {
-                        scores_assoc[n] += 1;
-                    }
-                });
+                nums.forEach(n => { if(!top_seeds.includes(n)) scores_assoc[n]++; });
             }
         });
-        // 種子給高分
-        top_seeds.forEach(s => scores_assoc[s] = 1000);
 
-        // 3. ⏳ 遺漏因子 (Omission) - 15%
+        // 3. Omission (近200期 freq, Max gap 300)
         let scores_miss = {};
-        // Current Omission
         let current_omission = {};
-        // 往回找最近出現的位置. historyVals[0] 是 gap 1. historyVals[i] gap is i+1
-        // Python 設限 300
         for(let n=1; n<=39; n++) {
             let gap = 300;
             let limit = Math.min(historyVals.length, 300);
             for(let i=0; i<limit; i++) {
-                if(historyVals[i].includes(n)) {
-                    gap = i + 1; // 這裡定義為距離現在幾期 (Python: last_idx - i)
-                    break;
-                }
+                if(historyVals[i].includes(n)) { gap = i + 1; break; }
             }
             current_omission[n] = gap;
         }
-
-        // Average Gap (近200期頻率)
         let subset200 = historyVals.slice(0, 200).flat();
-        let counts200 = {};
-        subset200.forEach(n => counts200[n] = (counts200[n]||0) + 1);
-        
+        let counts200 = {}; subset200.forEach(n => counts200[n] = (counts200[n]||0)+1);
         for(let n=1; n<=39; n++) {
             let freq = counts200[n] || 0;
             let avg_gap = 200 / (freq + 1);
             scores_miss[n] = (freq > 0) ? (current_omission[n] / avg_gap) : 0;
         }
 
-        // 4. ⚖️ 區間因子 (Zone) - 15%
-        // Python: recent = history_df.tail(10) -> JS: slice(0, 10)
+        // 4. Zone (近10期)
         let subset10 = historyVals.slice(0, 10);
-        let zones = {1: [], 2: [], 3: [], 4: []}; // 1-10, 11-20, 21-30, 31-39
-        // Init zones
-        for(let i=1; i<=10; i++) zones[1].push(i);
-        for(let i=11; i<=20; i++) zones[2].push(i);
-        for(let i=21; i<=30; i++) zones[3].push(i);
-        for(let i=31; i<=39; i++) zones[4].push(i);
-
         let zone_counts = {1:0, 2:0, 3:0, 4:0};
-        subset10.forEach(nums => {
-            nums.forEach(n => {
-                if(n<=10) zone_counts[1]++;
-                else if(n<=20) zone_counts[2]++;
-                else if(n<=30) zone_counts[3]++;
-                else zone_counts[4]++;
-            });
+        subset10.flat().forEach(n => {
+            if(n<=10) zone_counts[1]++; else if(n<=20) zone_counts[2]++; else if(n<=30) zone_counts[3]++; else zone_counts[4]++;
         });
-
         let scores_zone = {};
-        let counts10 = {};
-        subset10.flat().forEach(n => counts10[n] = (counts10[n]||0) + 1);
-
+        let counts10 = {}; subset10.flat().forEach(n => counts10[n]=(counts10[n]||0)+1);
         for(let n=1; n<=39; n++) {
             let z_id = n<=10?1 : n<=20?2 : n<=30?3 : 4;
-            let weight = 1 + (zone_counts[z_id] / 50.0);
-            let freq = counts10[n] || 0; // Python: freq.get(num, 0) based on recent(10)
-            scores_zone[n] = freq * weight;
+            scores_zone[n] = (counts10[n]||0) * (1 + (zone_counts[z_id] / 50.0));
         }
 
-        // Normalize
+        // Aggregate
         let norm_mom = normalize(scores_mom);
         let norm_assoc = normalize(scores_assoc);
         let norm_miss = normalize(scores_miss);
         let norm_zone = normalize(scores_zone);
 
-        // Final Score
         let final_scores = {};
         for(let n=1; n<=39; n++) {
-            final_scores[n] = 
-                (norm_mom[n]||0) * 0.40 + 
-                (norm_assoc[n]||0) * 0.30 + 
-                (norm_miss[n]||0) * 0.15 + 
-                (norm_zone[n]||0) * 0.15;
+            final_scores[n] = (norm_mom[n]||0)*0.4 + (norm_assoc[n]||0)*0.3 + (norm_miss[n]||0)*0.15 + (norm_zone[n]||0)*0.15;
         }
 
-        // Top 8
-        return Object.keys(final_scores)
-            .map(Number)
-            .sort((a,b) => final_scores[b] - final_scores[a])
-            .slice(0, 8)
-            .sort((a,b) => a-b);
+        // Return sorted list (All 39 numbers)
+        return Object.keys(final_scores).map(Number).sort((a,b) => final_scores[b] - final_scores[a]);
     }
 
 
     // ==========================================
-    //  UI 互動與回測執行
+    //  UI & Backtest Control
     // ==========================================
     function setMode(mode) {
         currentMode = mode;
         document.getElementById('btnModeA').className = mode === 'A' ? 'active' : '';
         document.getElementById('btnModeB').className = mode === 'B' ? 'active' : '';
         
-        if (mode === 'A') {
-            document.body.className = 'mode-a';
-            document.getElementById('strategyTitle').innerText = MODE_A_SETTINGS.label;
-            document.getElementById('strategy-desc').innerText = MODE_A_SETTINGS.desc;
-        } else {
-            document.body.className = 'mode-b';
-            document.getElementById('strategyTitle').innerText = MODE_B_SETTINGS.label;
-            document.getElementById('strategy-desc').innerText = MODE_B_SETTINGS.desc;
-        }
+        const settings = mode === 'A' ? MODE_A_SETTINGS : MODE_B_SETTINGS;
+        document.body.className = mode === 'A' ? 'mode-a' : 'mode-b';
+        document.getElementById('strategyTitle').innerText = settings.label;
+        document.getElementById('strategy-desc').innerText = settings.desc;
+        
         runAnalysisWithLoading();
     }
 
@@ -622,7 +556,7 @@
             fill.style.width = '80%';
             setTimeout(() => {
                 const infoBlock = document.getElementById('dataInfoBlock');
-                if (fullData.length > 0) infoBlock.innerText = `庫存: ${fullData.length} 期 (${fullData[fullData.length-1].date} ~ ${fullData[0].date})`;
+                if (fullData.length > 0) infoBlock.innerText = `庫存: ${fullData.length} 期`;
                 
                 let multiplier = parseFloat(document.getElementById('baseUnit').value) || 1;
                 let res = runBacktest(fullData, multiplier, currentMode);
@@ -646,9 +580,15 @@
         let maxWin = 0, curWin = 0, maxLoss = 0, curLoss = 0;
 
         const settings = mode === 'A' ? MODE_A_SETTINGS : MODE_B_SETTINGS;
-        const windowSize = (mode === 'A') ? 50 : 200; // 集成策略需要較長歷史(200 for omission)
+        const windowSize = 200; // Need efficient history
 
         if (data.length < windowSize + 1) return { net: 0 };
+
+        // **重要**：為了實現「贏家不續抱」，我們必須依序(從舊到新)運算，才能知道上一期的狀態
+        // data array is [Newest(0), ..., Oldest(N)]
+        // So we iterate i from (length - window - 1) DOWN TO 0.
+        
+        let lastWinningNums = []; // 紀錄上一期中獎的號碼 (for Mode B)
 
         for (let i = data.length - windowSize - 1; i >= 0; i--) {
             let historyData = data.slice(i + 1); 
@@ -656,36 +596,55 @@
             let targetDraw = data[i]; 
             
             let predicted = [];
-            if (mode === 'A') predicted = getStrategyAPrediction(historyVals);
-            else predicted = getStrategyBPrediction(historyVals);
+            let excludedNums = [];
+
+            if (mode === 'A') {
+                predicted = getStrategyAPrediction(historyVals);
+            } else {
+                // Mode B: 集成策略 + 贏家不續抱
+                let fullRanked = getEnsembleRankedList(historyVals);
+                
+                if (lastWinningNums.length > 0) {
+                    // 濾掉上一期贏家
+                    excludedNums = lastWinningNums;
+                    let filtered = fullRanked.filter(n => !lastWinningNums.includes(n));
+                    predicted = filtered.slice(0, 8);
+                } else {
+                    predicted = fullRanked.slice(0, 8);
+                }
+            }
 
             let hits = predicted.filter(x => targetDraw.numbers.includes(x)).length;
-
             let cost = settings.cost * multiplier;
             let payout = (settings.payouts[hits] || 0) * multiplier;
             let dailyNet = payout - cost;
 
-            totalCost += cost;
-            totalNet += dailyNet;
-            currentEquity += dailyNet;
-            
+            // 更新狀態 for 下一輪 loop
+            if (mode === 'B') {
+                if (dailyNet > 0) {
+                    // 獲利：記錄中獎號碼
+                    lastWinningNums = predicted.filter(x => targetDraw.numbers.includes(x));
+                } else {
+                    // 沒獲利：重置，下期不剔除
+                    lastWinningNums = [];
+                }
+            }
+
+            // 統計 (略)
+            totalCost += cost; totalNet += dailyNet; currentEquity += dailyNet;
             if (currentEquity > peakEquity) peakEquity = currentEquity;
             let dd = currentEquity - peakEquity;
             if (dd < maxDrawdown) maxDrawdown = dd;
 
-            if (dailyNet > 0) {
-                winDays++; curWin++; curLoss=0;
-                if(curWin > maxWin) maxWin = curWin;
-            } else {
-                curLoss++; curWin=0;
-                if(curLoss > maxLoss) maxLoss = curLoss;
-            }
+            if (dailyNet > 0) { winDays++; curWin++; curLoss=0; if(curWin>maxWin) maxWin=curWin; }
+            else { curLoss++; curWin=0; if(curLoss>maxLoss) maxLoss=curLoss; }
             tradingDays++;
 
             globalTradeHistory.push({
                 date: targetDraw.date,
                 numbers: targetDraw.numbers,
                 signal: predicted,
+                excluded: excludedNums, // For display
                 hits: hits,
                 cost: cost,
                 net: dailyNet,
@@ -693,26 +652,40 @@
             });
         }
         
+        // 為了 UI 顯示，反轉為 [最新 -> 最舊]
         globalTradeHistory.reverse();
         
-        return { 
-            cost: totalCost, 
-            net: totalNet, 
-            winDays: winDays, 
-            tradingDays: tradingDays, 
-            maxWin: maxWin, 
-            maxLoss: maxLoss, 
-            maxDrawdown: maxDrawdown 
-        };
+        // 紀錄「最新一期」的剔除狀態給預測使用 (因為 loop 結束時 lastWinningNums 是針對 data[0] 的結果)
+        // 但這裡 loop 結束時，lastWinningNums 已經根據 data[0] (最新開獎) 的結果更新了
+        // 所以這正是我們預測「未知下一期」所需要的剔除名單
+        lastRoundExcluded = (mode === 'B') ? lastWinningNums : [];
+
+        return { cost: totalCost, net: totalNet, winDays: winDays, tradingDays: tradingDays, maxWin: maxWin, maxLoss: maxLoss, maxDrawdown: maxDrawdown };
     }
 
     function predictNextDraw() {
         if(fullData.length === 0) return;
         let historyVals = fullData.map(d => d.numbers);
         let prediction = [];
-        
-        if (currentMode === 'A') prediction = getStrategyAPrediction(historyVals);
-        else prediction = getStrategyBPrediction(historyVals);
+        let infoText = "";
+
+        if (currentMode === 'A') {
+            prediction = getStrategyAPrediction(historyVals);
+        } else {
+            // Mode B
+            let fullRanked = getEnsembleRankedList(historyVals);
+            
+            if (lastRoundExcluded.length > 0) {
+                // 剔除
+                let filtered = fullRanked.filter(n => !lastRoundExcluded.includes(n));
+                prediction = filtered.slice(0, 8);
+                infoText = `<span style="color:#ff5252; font-size:12px;">⚠️ 已剔除上期贏家: ${lastRoundExcluded.map(n=>n<10?'0'+n:n).join(', ')}</span>`;
+            } else {
+                prediction = fullRanked.slice(0, 8);
+                // 檢查是否因為上期沒賺錢所以沒剔除
+                // 這裡可以選擇顯示 "上期未獲利，無剔除"
+            }
+        }
         
         let lastDate = new Date(fullData[0].date);
         let nextDate = new Date(lastDate);
@@ -726,11 +699,13 @@
         document.getElementById('nextDrawDate').innerText = `${m}/${d}`;
         document.getElementById('nextWeekday').innerText = `週${w}`;
         
-        let html = `<div class="pred-balls">
+        let html = `
+        <div style="margin-bottom:10px;">${infoText}</div>
+        <div class="pred-balls">
             ${prediction.map(n => `<div class="pred-ball">${n<10?'0'+n:n}</div>`).join('')}
         </div>
-        <div style="font-size:12px; color:#aaa;">
-            ${currentMode==='A' ? '策略B+ (5選)' : '集成策略 (8選)'} | 
+        <div style="font-size:12px; color:#666; margin-top:10px;">
+            ${currentMode==='A' ? '策略B+ (5選)' : '贏家不續抱 (8選)'} | 
             成本: $${(currentMode==='A'?MODE_A_SETTINGS.cost:MODE_B_SETTINGS.cost).toLocaleString()}
         </div>`;
         document.getElementById('prediction-content').innerHTML = html;
@@ -771,17 +746,23 @@
                 return `<span class="num-ball ${hit?'num-hit':''}">${n<10?'0'+n:n}</span>`;
             }).join('');
             
-            let predStr = row.signal.map(n=>n<10?'0'+n:n).join(', ');
-            if (row.signal.length > 5) predStr = `<span style="font-size:11px; color:#bbb;">${predStr}</span>`;
-            else predStr = `<span style="color:#29b6f6;">${predStr}</span>`;
+            let predHtml = row.signal.map(n => {
+                let hit = row.numbers.includes(n);
+                return `<span style="${hit?'color:#ffd600; font-weight:bold;':''}">${n<10?'0'+n:n}</span>`;
+            }).join(', ');
+
+            // 如果有剔除，顯示在預測下方
+            if(row.excluded && row.excluded.length > 0) {
+                predHtml += `<br><span class="num-excluded">剔除:${row.excluded.join(',')}</span>`;
+            }
 
             tr.innerHTML = `
-                <td style="color:#888;">${row.date.slice(5)}</td>
+                <td style="color:#666;">${row.date.slice(5)}</td>
                 <td>${numsHtml}</td>
-                <td>${predStr}</td>
+                <td style="font-size:12px; color:#4fc3f7;">${predHtml}</td>
                 <td>$${row.cost.toLocaleString()}</td>
-                <td style="color:${row.net>0?'#00e676':'#ff5252'}; font-weight:bold;">${row.net>0?'+':''}${row.net.toLocaleString()}</td>
-                <td>${row.isWin ? '<span style="color:#00e676; font-weight:bold;">WIN</span>' : '<span style="color:#555;">LOSS</span>'}</td>
+                <td style="color:${row.net>0?'#69f0ae':'#ff5252'}; font-weight:bold;">${row.net>0?'+':''}${row.net.toLocaleString()}</td>
+                <td>${row.isWin ? '<span style="color:#69f0ae;">WIN</span>' : '<span style="color:#555;">LOSS</span>'}</td>
             `;
             tbody.appendChild(tr);
         }
@@ -806,8 +787,8 @@
         
         if (equityChartInstance) equityChartInstance.destroy();
         
-        let lineColor = currentMode === 'A' ? '#29b6f6' : '#ab47bc'; 
-        let fillColor = currentMode === 'A' ? 'rgba(41, 182, 246, 0.1)' : 'rgba(171, 71, 188, 0.1)';
+        let lineColor = currentMode === 'A' ? '#0277bd' : '#8e24aa'; 
+        let fillColor = currentMode === 'A' ? 'rgba(2, 119, 189, 0.1)' : 'rgba(142, 36, 170, 0.1)';
 
         equityChartInstance = new Chart(ctx, {
             type: 'line',
@@ -821,7 +802,8 @@
                     borderWidth: 2, 
                     pointRadius: 0, 
                     pointHoverRadius: 4,
-                    fill: true
+                    fill: true,
+                    tension: 0.1
                 }]
             },
             options: {
@@ -831,8 +813,8 @@
                 scales: { 
                     x: { display: false }, 
                     y: { 
-                        grid: { color: '#333' },
-                        ticks: { color: '#888' }
+                        grid: { color: '#252525' },
+                        ticks: { color: '#666' }
                     } 
                 }
             }
